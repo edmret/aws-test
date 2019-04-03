@@ -24,7 +24,7 @@ provider:
     - Effect: "Allow"
       Action:
         - "sqs:SendMessage"
-      Resource: "arn:aws:aqs:${self:provider.region}:*:MyQueue"
+      Resource: "arn:aws:sqs:${self:provider.region}:*:MyQueue"
 
 
 # you can overwrite defaults here
@@ -72,11 +72,12 @@ functions:
   sqsHello:
     handler: handler.sqsHello
     events:
+      - sqs: arn:aws:sqs:${self:provider.region}:*:MyQueue
       - sqs:
           arn:
             Fn::GetAtt:
-              - MyQueue
-              - Arn
+                - MyQueue
+                - Arn
           batchSize: 1
 resources:
   Resources:

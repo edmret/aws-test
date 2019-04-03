@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 
 const region = 'us-east-1';
 
-let sqs = new AWS.SQS({region: region});
+var sqs = new AWS.SQS({region: region});
 
 const AWS_ACCOUNT = process.env.ACCOUNT_ID;
 //const QUEUE_URL = `https://sqs.${region}.amazonaws.com/${AWS_ACCOUNT}/MyQueue`;
@@ -21,7 +21,7 @@ module.exports.hello = async (event, context, callback) => {
     QueueUrl: QUEUE_URL
   };
 
-  console.log('before the storm');
+  console.log('before the storm', params);
   try{
     sqs.sendMessage(params, function(err, data) {
 
@@ -39,7 +39,7 @@ module.exports.hello = async (event, context, callback) => {
         response = {
           statusCode: 200,
           body: JSON.stringify({
-            message: data.MessageId
+            message: data
           })
         };
       }
