@@ -17,19 +17,28 @@ service: test-service # NOTE: update this with your service name
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
 
+custom:
+  settings:
+    ITEMS_DYNAMODB_TABLE: basicOperationsItemsTable
+    REGION: ${self:provider.region}
+
 provider:
   name: aws
   runtime: nodejs8.10
+  stage: dev
+  region: us-east-1
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "sqs:SendMessage"
       Resource: "arn:aws:sqs:${self:provider.region}:*:MyQueue"
-
-
-# you can overwrite defaults here
-  stage: dev
-  region: us-east-1
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:GetItem"
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:DeleteItem"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.ITEMS_DYNAMODB_TABLE}"
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -48,9 +57,7 @@ provider:
 #            - "/*"
 
 # you can define service wide environment variables here
-  environment:
-    customEnv: envVar
-    newVar: looooool
+  environment: ${self:custom.settings}
 
 # you can add packaging information here
 #package:
@@ -79,12 +86,51 @@ functions:
                 - MyQueue
                 - Arn
           batchSize: 1
+  saveItem:
+    handler: handler.saveItem
+    events:
+      - http:
+          path: item
+          method: post
+  getItem:
+    handler: handler.getItem
+    events:
+      - http:
+          path: item/{itemId}
+          method: get
+  deleteItem:
+    handler: handler.deleteItem
+    events:
+      - http:
+          path: item/{itemId}
+          method: delete
+  updateItem:
+    handler: handler.updateItem
+    events:
+      - http:
+          path: item/{itemId}
+          method: put
+  
 resources:
   Resources:
     MyQueue:
       Type: "AWS::SQS::Queue"
       Properties:
         QueueName: "MyQueue"
+    basicOperationsItemsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.settings.ITEMS_DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: "itemId"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "itemId"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        
 #    runtime: nodejs8.10
 #    
 
