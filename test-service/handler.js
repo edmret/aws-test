@@ -6,11 +6,12 @@ const uuidv1 = require('uuid/v1');
 
 const region = 'us-east-1';
 
-var sqs = process.env.REGION;
+var sqs = new AWS.SQS();
+const ses = new AWS.SES();
 
 const AWS_ACCOUNT = process.env.ACCOUNT_ID;
-//const QUEUE_URL = `https://sqs.${region}.amazonaws.com/${AWS_ACCOUNT}/MyQueue`;
-const QUEUE_URL = `https://sqs.us-east-1.amazonaws.com/928410696171/MyQueue`;
+const QUEUE_URL = `https://sqs.${region}.amazonaws.com/${AWS_ACCOUNT}/MyQueue`;
+//const QUEUE_URL = `https://sqs.us-east-1.amazonaws.com/928410696171/MyQueue`;
 
 module.exports.hello = (event, context, callback) => {
 
@@ -51,7 +52,7 @@ module.exports.hello = (event, context, callback) => {
 
 module.exports.sqsHello = async (event, context) => {
   console.log('sqs hello called');
-  console.log(event);
+  console.log(event.Records.map(r=> r.body));
 
   context.done(null, '');
 };
@@ -105,10 +106,63 @@ module.exports.updateItem = async (event) => {
   });
 };
 
+module.exports.getAll = async() => {
+  return _manager.getAllItems().then(response => {
+    console.log(response);
+    return createResponse(200, response);
+  });
+}
+
+module.exports.sendEmail = async() => {
+  const sender = "AWS Retama <edmundo.martinez@ipointsystems.com>";
+  const recipient = "edmret@gmail.com";
+
+  const subject = "Amazon AWS";
+
+  const body_html = `
+    this is the test EMail
+  `;
+
+  const charset = "UTF-8";
+
+  const params = {
+    Source: sender,
+    Destination: {
+      ToAddresses: [
+        recipient
+      ]
+    },
+    Message: {
+      Subject: {
+        Data: subject,
+        Charset: charset
+      },
+      Body: {
+        Text: {
+          Data: body_html,
+          Charset: charset
+        }
+      }
+    }
+  };
+
+  await ses.sendEmail(params)
+    .promise()
+    .then(data=> console.log('email Sent', data))
+    .catch(err => console.log('error-ocurred', err));
+
+  return createResponse(200, 'email sent');
+};
+
+
 
 function createResponse(statusCode, message){
   return {
     statusCode,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true,
+    },
     body: JSON.stringify(message)
   };
 };

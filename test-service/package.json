@@ -1,14 +1,20 @@
 {
   "name": "test-service",
   "version": "1.0.0",
-  "description": "",
-  "main": "handler.js",
+  "description": "test project to play with lambda",
   "scripts": {
-    "test": "test"
+    "test": "serverless invoke test",
+    "deploy": "serverless deploy -v --aws-profile $AWS_DEPLOY_NAME",
+    "deploy-windows": "serverless deploy -v --aws-profile %AWS_DEPLOY_NAME%"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.435.0",
+    "serverless": "^1.40.0",
+    "serverless-mocha-plugin": "^1.10.0"
   }
 }

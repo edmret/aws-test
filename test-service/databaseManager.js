@@ -60,3 +60,15 @@ module.exports.updateItem = (itemId, paramsName, paramsValue) => {
         return response.Attributes
     });
 };
+
+module.exports.getAllItems = async() => {
+    let params = {
+        TableName: TABLE_NAME
+    };
+
+    return dynamo.scan(params).promise()
+        .then(data => data.Items)
+        .catch(err => console.log('error', err));
+
+
+}

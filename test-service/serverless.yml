@@ -21,6 +21,7 @@ custom:
   settings:
     ITEMS_DYNAMODB_TABLE: basicOperationsItemsTable
     REGION: ${self:provider.region}
+    ACCOUNT_ID: 928410696171
 
 provider:
   name: aws
@@ -38,7 +39,12 @@ provider:
         - "dynamodb:PutItem"
         - "dynamodb:UpdateItem"
         - "dynamodb:DeleteItem"
+        - "dynamodb:Scan"
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.ITEMS_DYNAMODB_TABLE}"
+    - Effect: "Allow"
+      Action:
+        - "ses:SendEmail"
+      Resource: "arn:aws:ses:${self:provider.region}:*:identity/*"
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -98,6 +104,13 @@ functions:
       - http:
           path: item/{itemId}
           method: get
+  getAll:
+    handler: handler.getAll
+    events:
+      - http:
+          path: items
+          method: get
+          cors: true
   deleteItem:
     handler: handler.deleteItem
     events:
@@ -110,7 +123,12 @@ functions:
       - http:
           path: item/{itemId}
           method: put
-  
+  sendEmail:
+    handler: handler.sendEmail
+    events:
+      - http:
+          path: sendemail
+          method: get
 resources:
   Resources:
     MyQueue:
