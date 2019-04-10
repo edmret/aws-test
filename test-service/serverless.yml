@@ -148,7 +148,8 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        
+plugins:
+  - serverless-mocha-plugin
 #    runtime: nodejs8.10
 #    
 
