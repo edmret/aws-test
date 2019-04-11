@@ -9,7 +9,9 @@ phases:
       - serverless config credentials --provider aws --key $KEY --secret $SECRET --profile $AWS_DEPLOY_NAME
   pre_build:
     commands:
-      - npm run test
+      - serverless invoke test
   post_build:
     commands:
       - npm run deploy
+cache:
+  - test-service/node_modules/
