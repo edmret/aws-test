@@ -17,11 +17,9 @@ service: test-service # NOTE: update this with your service name
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
 
-#custom:
+custom:
   #serverless-mocha-plugin:
     #postTestCommands:
-      
-
   settings:
     ITEMS_DYNAMODB_TABLE: basicOperationsItemsTable
     REGION: ${self:provider.region}
