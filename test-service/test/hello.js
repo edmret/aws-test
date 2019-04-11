@@ -17,4 +17,8 @@ describe('hello', () => {
       expect(response).to.not.be.empty;
     });
   });
+
+  it('this test ganna fail', ()=> {
+    expect(false).equal(true);
+  });
 });
