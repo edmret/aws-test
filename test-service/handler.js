@@ -17,6 +17,7 @@ module.exports.hello = (event, context, callback) => {
 
   let response = {};
 
+
   //console.log(event, context, callback);
 
   const params = {

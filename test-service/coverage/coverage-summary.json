@@ -1,0 +1,4 @@
+{"total": {"lines":{"total":95,"covered":34,"skipped":0,"pct":35.79},"statements":{"total":96,"covered":34,"skipped":0,"pct":35.42},"functions":{"total":29,"covered":3,"skipped":0,"pct":10.34},"branches":{"total":2,"covered":1,"skipped":0,"pct":50}}
+,"C:\\Users\\edmundom\\Vitus\\testlambda\\test-service\\databaseManager.js": {"lines":{"total":25,"covered":8,"skipped":0,"pct":32},"functions":{"total":10,"covered":0,"skipped":0,"pct":0},"statements":{"total":25,"covered":8,"skipped":0,"pct":32},"branches":{"total":0,"covered":0,"skipped":0,"pct":100}}
+,"C:\\Users\\edmundom\\Vitus\\testlambda\\test-service\\handler.js": {"lines":{"total":70,"covered":26,"skipped":0,"pct":37.14},"functions":{"total":19,"covered":3,"skipped":0,"pct":15.79},"statements":{"total":71,"covered":26,"skipped":0,"pct":36.62},"branches":{"total":2,"covered":1,"skipped":0,"pct":50}}
+}

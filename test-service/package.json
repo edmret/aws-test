@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "test project to play with lambda",
   "scripts": {
-    "test": "serverless invoke test",
+    "test": "nyc serverless invoke test",
     "deploy": "serverless deploy -v --aws-profile $AWS_DEPLOY_NAME",
     "deploy-windows": "serverless deploy -v --aws-profile %AWS_DEPLOY_NAME%"
   },
