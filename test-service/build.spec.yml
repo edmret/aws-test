@@ -14,4 +14,5 @@ phases:
     commands:
       - npm run deploy
 cache:
-  - test-service/node_modules/
+    paths:
+      - test-service/node_modules/
