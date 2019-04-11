@@ -3,6 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
+      - npm install -g serverless
       - cd test-service/
       - npm install
       - serverless config credentials --provider aws --key $KEY --secret $SECRET --profile $AWS_DEPLOY_NAME
