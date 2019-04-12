@@ -1,0 +1,5 @@
+Resources:
+  QaQue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      QueueName: "QaQue"
