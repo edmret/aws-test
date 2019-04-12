@@ -20,21 +20,52 @@ service: test-service # NOTE: update this with your service name
 custom:
   #serverless-mocha-plugin:
     #postTestCommands:
+      #- npm
+  stages:
+    - dev
+    - staging
+    - qa
+    - prod
+  accountId:
+    local: 928410696171
+    dev: 928410696171
+    qa: 928410696171
+    staging: 928410696171
+    prod: 928410696171
+  region:
+    local: us-east-1
+    dev: us-east-1
+    qa: us-east-2
+    staging: us-east-1
+    prod: us-east-1
+  itemsTable:
+    local: basicOperationsItemsTable
+    dev: basicOperationsItemsTable
+    qa: basicOperationsItemsTableQA
+    staging: basicOperationsItemsTable
+    prod: basicOperationsItemsTable
+  queueName:
+    local: MyQueue
+    dev: MyQueue
+    qa: QaQue
+    staging: MyQueue
+    prod: MyQueue
   settings:
-    ITEMS_DYNAMODB_TABLE: basicOperationsItemsTable
+    ITEMS_DYNAMODB_TABLE: ${self:custom.itemsTable.${self:provider.stage}}
     REGION: ${self:provider.region}
-    ACCOUNT_ID: 928410696171
+    ACCOUNT_ID: ${self:custom.accountId.${self:provider.stage}}
+    QUEUE_NAME: ${self:custom.queueName.${self:provider.stage}}
 
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: dev
-  region: us-east-1
+  stage: ${opt:stage,'dev'}
+  region: ${self:custom.region.${self:provider.stage}}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "sqs:SendMessage"
-      Resource: "arn:aws:sqs:${self:provider.region}:*:MyQueue"
+      Resource: "arn:aws:sqs:${self:provider.region}:*:${self:custom.settings.QUEUE_NAME}"
     - Effect: "Allow"
       Action:
         - "dynamodb:GetItem"
@@ -87,11 +118,11 @@ functions:
   sqsHello:
     handler: handler.sqsHello
     events:
-      - sqs: arn:aws:sqs:${self:provider.region}:*:MyQueue
+      - sqs: arn:aws:sqs:${self:provider.region}:*:${self:custom.settings.QUEUE_NAME}
       - sqs:
           arn:
             Fn::GetAtt:
-                - MyQueue
+                - ${self:custom.settings.QUEUE_NAME}
                 - Arn
           batchSize: 1
   saveItem:
@@ -132,26 +163,24 @@ functions:
           path: sendemail
           method: get
 resources:
-  Resources:
-    MyQueue:
-      Type: "AWS::SQS::Queue"
-      Properties:
-        QueueName: "MyQueue"
-    basicOperationsItemsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:custom.settings.ITEMS_DYNAMODB_TABLE}
-        AttributeDefinitions:
-          - AttributeName: "itemId"
-            AttributeType: "S"
-        KeySchema:
-          - AttributeName: "itemId"
-            KeyType: "HASH"
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+  - Resources:
+      basicOperationsItemsTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          TableName: ${self:custom.settings.ITEMS_DYNAMODB_TABLE}
+          AttributeDefinitions:
+            - AttributeName: "itemId"
+              AttributeType: "S"
+          KeySchema:
+            - AttributeName: "itemId"
+              KeyType: "HASH"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+  - ${file(./resources-${self:provider.stage}.yml)}
 plugins:
   - serverless-mocha-plugin
+  - serverless-stage-manager
 #    runtime: nodejs8.10
 #    
 
